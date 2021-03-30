@@ -33,7 +33,24 @@ ClientMethod onPopupAction(
 	action,
 	value) [ Language = javascript ]
 {
-  alert('User entered: ' + value);
+  //alert('User entered: ' + value);
+  //var escape = item.replace(/\//g, '-');  // fix slashes in dates
+  var escape1 = encodeURI(value);
+  //alert(escape1);
+  var escape2 = encodeURIComponent(value);  // fix % and more
+  //alert(escape2);
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      //document.getElementById("div_debug").innerHTML += this.responseText;
+    }
+    if (this.readyState == 4 && this.status != 200) {
+      //document.getElementById("div_debug").innerHTML += this.responseText;
+    }
+  };
+  xhttp.open("POST", "/restAll/debug", true);
+  //xhttp.open("POST", "/restapi/debug/" + escape + '/' + index, true, "_SYSTEM", "SYS");
+  xhttp.send(value);
 }
 
 /// To use the fileSelect dialog to view the file system on the server,
