@@ -108,8 +108,18 @@ ClassMethod CompareCode(
 	If ($Get(pWhich2) = "") Set pWhich2 = pWhich1
 	Set tLine2 = $Get(^ImportFile(pFile2,tIndex,pWhat,pWhich1))
 	For {
-		Set tLine1 = $Order(^ImportFile(pFile1,tLine1),1,input1)
-		Set tLine2 = $Order(^ImportFile(pFile2,tLine2),1,input2)
+		For {
+			Set tLine1 = $Order(^ImportFile(pFile1,tLine1),1,input1)
+			If (tLine1 = "") Quit
+			If (input1 = "") Continue  // Skip, ignore empty lines
+			Quit
+		}
+		For {
+			Set tLine2 = $Order(^ImportFile(pFile2,tLine2),1,input2)
+			If (tLine2 = "") Quit
+			If (input2 = "") Continue  // Skip, ignore empty lines
+			Quit
+		}
 		If (input1 = "</Class>"),(input2 = "</Class>") Quit
 		If (input1 = input2) Continue
 		If input1?1"<Language>cache".E Continue
