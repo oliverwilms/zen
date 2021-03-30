@@ -62,6 +62,7 @@ ClassMethod PostDebug(
 	Do ..DebugTEST("pDebug = "_pDebug)
 	If ($Extract(pDebug,*) = $Char(13)) Set pDebug = $Extract(pDebug,1,*-1)
 	Set ^RichesDEBUG(pIndex,tIncrement) = pIndex_","_ pDebug
+	Set tSC = ..ReadFile(pDebug)
 	Quit $$$OK
 }
 
@@ -93,6 +94,32 @@ ClassMethod PostSQL(
 		Do ..DebugTEST("%ROWID = "_rset.%ROWID)
 	}
 	Quit tSC
+}
+
+ClassMethod ReadFile(pFile As %String = "") As %Status
+{
+	Set tSC = $$$OK
+	If (pFile = "") Quit tSC
+	Set tIncrement = $Increment(^ImportFile)
+	Set ^ImportFile(tIncrement) = pFile
+	Set timeout = 300
+	Open pFile:("R"):timeout  // read
+	If ($TEST = 0) {
+		Set tSC = $$$ERROR($$$GeneralError,"Unable to open "_pFile)
+		Quit tSC
+	}
+	Try {
+		Use pFile
+		For {
+			Read input
+			Set tLine = $Increment(^ImportFile(tIncrement,0))
+			Set ^ImportFile(tIncrement,tLine) = input
+		}
+		Close pFile
+	} Catch {
+		Close pFile
+	}
+	Quit $$$OK
 }
 
 ClassMethod TestQuery(
