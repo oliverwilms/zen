@@ -54,6 +54,11 @@ ClassMethod CompareFiles(
 		Set tData = $Data(^ImportFile(pFile2,-1,"Class",tClassName))
 		If (tData = 0) {
 			Write "Class ",tClassName," does not exist in ",$Get(^ImportFile(pFile2)),!
+			Continue
+		}
+		Set tSC = ..CompareCode(pFile1,pFile2,"Class",tClassName)
+		If $$$ISERR(tSC) {
+			Write "Diff found in ",tClassName,!
 		}
 	}
 	For {
@@ -82,6 +87,47 @@ ClassMethod CompareFiles(
 		}
 	}
 	Quit $$$OK
+}
+
+ClassMethod CompareCode(
+	pFile1 As %String = "1",
+	pFile2 As %String = "2",
+	pWhat As %String = "Class",
+	pWhich1 As %String = "HS.Local.VA.eSCM.Common.DocumentIDTable") As %Status
+{
+	Set tIndex = 0
+	Set tSC = $$$OK
+	If (pFile1 = "") Quit tSC
+	If (pFile2 = "") Quit tSC
+	If (pFile1 = pFile2) Quit tSC
+	If (pWhat = "") Quit tSC
+	If (pWhich1 = "") Quit tSC
+	If pWhat = "Class" Set tIndex = -1
+	Set tLine1 = $Get(^ImportFile(pFile1,tIndex,pWhat,pWhich1))
+	If (tLine1 < 1) Quit tSC
+	If ($Get(pWhich2) = "") Set pWhich2 = pWhich1
+	Set tLine2 = $Get(^ImportFile(pFile2,tIndex,pWhat,pWhich1))
+	For {
+		Set tLine1 = $Order(^ImportFile(pFile1,tLine1),1,input1)
+		Set tLine2 = $Order(^ImportFile(pFile2,tLine2),1,input2)
+		If (input1 = "</Class>"),(input2 = "</Class>") Quit
+		If (input1 = input2) Continue
+		If input1?1"<Language>cache".E Continue
+		If input1?1"<Language>objectscript".E Continue
+		If input1?1"<TimeChanged>".E Continue
+		If input1?1"<TimeCreated>".E Continue
+		If input1?1"<Type>%Library.CacheSerialState".E Continue
+		If input1?1"<Type>%Library.CacheStorage".E Continue
+		If input1?1"<Type>%Storage.Persistent".E Continue
+		If input1?1"<Type>%Storage.Serial".E Continue
+		If input1?1"on "4N1"-"2N1"-"2N1" at "2N1":"2N1":"2N1"."3N1" [".E Continue
+		If input1?1"by user "1.E1"</Description>" Continue
+		Write tLine1,": ",input1,!
+		Write tLine2,": ",input2,!
+		Set tSC = $$$ERROR($$$GeneralError,"Diff found at line "_tLine1)
+		Quit
+	}
+	Quit tSC
 }
 
 }
