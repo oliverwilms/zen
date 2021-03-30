@@ -22,8 +22,32 @@ XData Style
 XData Contents [ XMLNamespace = "http://www.intersystems.com/zen" ]
 {
 <page xmlns="http://www.intersystems.com/zen" title="">
-<button caption="Hello"/>
+<button caption="Initiate Conversation"
+        onclick="zenPage.showPopupFile();"
+        title="A demonstration of launching a popup window" />
 </page>
+}
+
+ClientMethod onPopupAction(
+	popupName,
+	action,
+	value) [ Language = javascript ]
+{
+  alert('User entered: ' + value);
+}
+
+/// To use the fileSelect dialog to view the file system on the server,
+///  the current user must hold USE privileges on one of the following resources:
+///  %Admin_Manage, %Admin_Operate, %Admin_Security, or %Development.
+ClientMethod showPopupFile() [ Language = javascript ]
+{
+var pathname = '';
+var showdir = '0';
+zenPage.launchPopupWindow(
+  '%ZEN.Dialog.fileSelect.cls?Dir=' + escape(pathname) +
+  '&showdirectoryonly=' + showdir,
+  'FileSelectWindow',
+  'status,scrollbars,resizable,width=660,height=700');
 }
 
 }
