@@ -1,5 +1,11 @@
-Class MyApp.File
+Class MyApp.File Extends %Persistent [ StorageStrategy = NewStorage1 ]
 {
+
+Index FileIdIndex On FileId [ IdKey, Unique ];
+
+Property FileId As %Integer;
+
+Property FilePN As %String;
 
 ClassMethod AnalyzeFile(pFile As %String = "") As %Status
 {
@@ -138,6 +144,23 @@ ClassMethod CompareCode(
 		Quit
 	}
 	Quit tSC
+}
+
+Storage NewStorage1
+{
+<SQLMap name="Map1">
+<Data name="FilePN">
+<Delimiter>"^"</Delimiter>
+<Piece>1</Piece>
+</Data>
+<Global>^ImportFile</Global>
+<Subscript name="1">
+<Expression>{FileId}</Expression>
+</Subscript>
+<Type>data</Type>
+</SQLMap>
+<StreamLocation>^MyApp.FileS</StreamLocation>
+<Type>%Storage.SQL</Type>
 }
 
 }
