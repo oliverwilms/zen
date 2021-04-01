@@ -59,32 +59,32 @@ XData Contents [ XMLNamespace = "http://www.intersystems.com/zen" ]
 <MyApp:MenuComposite width="100%"/>
 <hgroup width="100%">
 <fieldSet id="fieldSet1" hidden="false" legend="File1">
-<form id="form1" controllerId="file1" layout="vertical" cellStyle="padding: 2px; padding-left: 5px; padding-right: 5px;">
+<form id="form1" controllerId="file1" layout="horizontal" cellStyle="padding: 2px; padding-left: 5px; padding-right: 5px;">
 <text label="File:" dataBinding="FilePN" id="FilePN1" name="FilePN1" size="60"/>
+<button caption="Browse first file" onclick="zenPage.showPopupFile(1);" title="A demonstration of launching a popup window" />
 </form>
 </fieldSet>
 <fieldSet id="fieldSet2" hidden="false" legend="File2">
-<form id="form2" controllerId="file2" layout="vertical" cellStyle="padding: 2px; padding-left: 5px; padding-right: 5px;">
+<form id="form2" controllerId="file2" layout="horizontal" cellStyle="padding: 2px; padding-left: 5px; padding-right: 5px;">
 <text label="File:" dataBinding="FilePN" id="FilePN2" name="FilePN2" size="60"/>
+<button caption="Browse second file" onclick="zenPage.showPopupFile(2);" title="A demonstration of launching a popup window" />
 </form>
 </fieldSet>
 </hgroup>
 
 <vgroup width="50%">
-<html id="title">Code Compare</html>
+<html id="title">Table of files:</html>
 <dataController id="file1" modelClass="MyApp.FileModel" modelId=""/>
 <dataController id="file2" modelClass="MyApp.FileModel" modelId=""/>
 <dynaForm id="dform1" controllerId="file1"  hidden="true"/>
-<button caption="New" onclick="zenPage.newFile1();" />
-<button caption="Save" onclick="zenPage.saveFile1();" />
+<button caption="New" hidden="true" onclick="zenPage.newFile1();" />
+<button caption="Save" hidden="true" onclick="zenPage.saveFile1();" />
 <tablePane id="files" sql="SELECT FileId,FilePN FROM MyApp.Files">
 <column colName="FileId" hidden="true"/>
-<column link="javascript:zenPage.showForm(1,'#(%query.FileId)#');" linkCaption="File1" />
-<column link="javascript:zenPage.showForm(2,'#(%query.FileId)#');" linkCaption="File2" />
+<column header="Choose" link="javascript:zenPage.showForm(1,'#(%query.FileId)#');" linkCaption="File1" width="5%" />
+<column header="Choose" link="javascript:zenPage.showForm(2,'#(%query.FileId)#');" linkCaption="File2" width="5%" />
 </tablePane>
-<button caption="Browse first file" onclick="zenPage.showPopupFile(1);" title="A demonstration of launching a popup window" />
 </vgroup>
-<button caption="Browse second file" onclick="zenPage.showPopupFile(2);" title="A demonstration of launching a popup window" />
 </page>
 }
 
