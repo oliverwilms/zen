@@ -100,7 +100,7 @@ ClientMethod onPopupAction(
 	action,
 	value) [ Language = javascript ]
 {
-	alert(popupName);
+	//alert(popupName);
   //var escape = item.replace(/\//g, '-');  // fix slashes in dates
   var escape1 = encodeURI(value);
   //alert(escape1);
@@ -120,6 +120,9 @@ ClientMethod onPopupAction(
   xhttp.send(value);
   if (popupName == 'FileSelectWindow1') {
   }
+  	var table=zenPage.getComponentById('files');
+	//refresh data in files table
+	table.executeQuery();
 }
 
 /// Save the current instance of the controller object
