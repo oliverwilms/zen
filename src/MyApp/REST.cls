@@ -119,6 +119,7 @@ ClassMethod ReadFile(pFile As %String = "") As %Status
 	} Catch {
 		Close pFile
 	}
+	JOB ##class(MyApp.Files).AnalyzeFile(tIncrement)
 	Quit $$$OK
 }
 
