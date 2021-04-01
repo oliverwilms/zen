@@ -15,17 +15,84 @@ Parameter DOMAIN;
 XData Style
 {
 <style type="text/css">
+
+/*fieldSet styles*/
+.fieldset{
+     background: #FFFFFF;
+     border: solid 5px #C5D6D6;
+     color: #000000;
+     font-size: 1em;
+     font-family: arial;
+}
+/*text control styles*/
+.text
+{  
+    font-size: .8em;
+    font-family: arial;
+    color: #000000;
+    background-color: #ffffff;
+    padding: 2px;
+    border: solid 1px grey;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    height: 25px;
+}
+/*dataCombo styles*/
+.comboboxInput  {
+    font-size: .8em;
+    font-family: arial;
+    color: #000000;  
+    padding: 2px;
+    border: solid 1px grey;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    height: 20px;
+ }         
+
 </style>
 }
 
 /// This XML block defines the contents of this page.
 XData Contents [ XMLNamespace = "http://www.intersystems.com/zen" ]
 {
-<page xmlns="http://www.intersystems.com/zen" title="">
-<button caption="Initiate Conversation"
-        onclick="zenPage.showPopupFile();"
-        title="A demonstration of launching a popup window" />
+<page xmlns="http://www.intersystems.com/zen" title="Code Compare" xmlns:MyApp="http://www.intersystems.com/MyApp">
+<MyApp:MenuComposite width="100%"/>
+<hgroup width="100%">
+<fieldSet id="fieldSet1" hidden="false" legend="File1">
+<form id="form1" controllerId="file1" layout="vertical" cellStyle="padding: 2px; padding-left: 5px; padding-right: 5px;">
+<text label="File:" dataBinding="FilePN" id="FilePN1" name="FilePN1" size="60"/>
+</form>
+</fieldSet>
+<fieldSet id="fieldSet2" hidden="false" legend="File2">
+<form id="form2" controllerId="file2" layout="vertical" cellStyle="padding: 2px; padding-left: 5px; padding-right: 5px;">
+<text label="File:" dataBinding="FilePN" id="FilePN2" name="FilePN2" size="60"/>
+</form>
+</fieldSet>
+</hgroup>
+
+<vgroup width="50%">
+<html id="title">Code Compare</html>
+<dataController id="file1" modelClass="MyApp.FileModel" modelId=""/>
+<dataController id="file2" modelClass="MyApp.FileModel" modelId=""/>
+<dynaForm id="dform1" controllerId="file1"  hidden="true"/>
+<button caption="New" onclick="zenPage.newFile1();" />
+<button caption="Save" onclick="zenPage.saveFile1();" />
+<tablePane id="files" sql="SELECT FileId,FilePN FROM MyApp.Files">
+<column colName="FileId" hidden="true"/>
+<column link="javascript:zenPage.showForm(1,'#(%query.FileId)#');" linkCaption="File1" />
+<column link="javascript:zenPage.showForm(2,'#(%query.FileId)#');" linkCaption="File2" />
+</tablePane>
+<button caption="Browse first file" onclick="zenPage.showPopupFile(1);" title="A demonstration of launching a popup window" />
+</vgroup>
+<button caption="Browse second file" onclick="zenPage.showPopupFile(2);" title="A demonstration of launching a popup window" />
 </page>
+}
+
+/// Create a new instance of the controller object
+ClientMethod newFile1() [ Language = javascript ]
+{
+	var controller = zenPage.getComponentById('file1');
+	controller.createNewObject();
 }
 
 ClientMethod onPopupAction(
@@ -33,7 +100,7 @@ ClientMethod onPopupAction(
 	action,
 	value) [ Language = javascript ]
 {
-  //alert('User entered: ' + value);
+	alert(popupName);
   //var escape = item.replace(/\//g, '-');  // fix slashes in dates
   var escape1 = encodeURI(value);
   //alert(escape1);
@@ -51,19 +118,40 @@ ClientMethod onPopupAction(
   xhttp.open("POST", "/restAll/debug", true);
   //xhttp.open("POST", "/restapi/debug/" + escape + '/' + index, true, "_SYSTEM", "SYS");
   xhttp.send(value);
+  if (popupName == 'FileSelectWindow1') {
+  }
+}
+
+/// Save the current instance of the controller object
+ClientMethod saveFile1() [ Language = javascript ]
+{
+	var form = zenPage.getComponentById('form1');
+	form.save();
+	var table = zenPage.getComponentById('files');
+	table.executeQuery();
+}
+
+ClientMethod showForm(
+	form,
+	file) [ Language = javascript ]
+{
+	var controller = zenPage.getComponentById('file' + form);
+	controller.setProperty('modelId',file);
+	var formGroup = zenPage.getComponentById('fieldSet' + form);
+	formGroup.setProperty('hidden',false);
 }
 
 /// To use the fileSelect dialog to view the file system on the server,
 ///  the current user must hold USE privileges on one of the following resources:
 ///  %Admin_Manage, %Admin_Operate, %Admin_Security, or %Development.
-ClientMethod showPopupFile() [ Language = javascript ]
+ClientMethod showPopupFile(param) [ Language = javascript ]
 {
-var pathname = '';
-var showdir = '0';
-zenPage.launchPopupWindow(
+	var pathname = '';
+	var showdir = '0';
+	zenPage.launchPopupWindow(
   '%ZEN.Dialog.fileSelect.cls?Dir=' + escape(pathname) +
   '&showdirectoryonly=' + showdir,
-  'FileSelectWindow',
+  'FileSelectWindow' + param,
   'status,scrollbars,resizable,width=660,height=700');
 }
 
