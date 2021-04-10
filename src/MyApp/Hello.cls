@@ -1,5 +1,5 @@
 /// Created using the page template: Default
-Class MyApp.Hello Extends %ZEN.Component.page [ CompileAfter = MyApp.Components.MenuComposite ]
+Class MyApp.Hello Extends %ZEN.Component.page [ DependsOn = MyApp.Components.MenuComposite ]
 {
 
 /// Class name of application this page belongs to.
