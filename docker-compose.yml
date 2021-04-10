@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  iris:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    command: "-b /opt/irisapp/vcopy.sh"
+    init: true
+    restart: always
+    ports: 
+      - 52672:51773
+      - 52673:52773
+      - 53773
+    volumes:
+      - ~/iris.key:/usr/irissys/mgr/iris.key
+      - zen/voldata
+
+volumes:
+  zen:
