@@ -8,8 +8,8 @@ services:
     init: true
     restart: always
     ports: 
-      - 32769:51773
-      - 32768:52773
+      - 52672:51773
+      - 52673:52773
       - 53773
     volumes:
       - ~/iris.key:/usr/irissys/mgr/iris.key
