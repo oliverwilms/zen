@@ -2,16 +2,17 @@ ARG IMAGE=intersystemsdc/iris-community:2020.1.0.215.0-zpm
 FROM $IMAGE
 
 USER root
+COPY irissession.sh /
 
 WORKDIR /opt/irisapp
 RUN mkdir /ghostdb/ && mkdir /voldata/ && mkdir /voldata/irisdb
-RUN chown ${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} /opt/irisapp /ghostdb/ /voldata/ /voldata/irisdb/
+RUN chown ${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} /irissession.sh /opt/irisapp /ghostdb/ /voldata/ /voldata/irisdb/ \
+  && chmod +x /irissession.sh
 
 USER irisowner
 
 COPY  Installer.cls .
 COPY  src src
-COPY irissession.sh /
 SHELL ["/irissession.sh"]
 
 RUN \
