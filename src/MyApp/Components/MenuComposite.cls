@@ -30,7 +30,7 @@ a.menuItemDisabled {
 }
 
 /// Contents of this composite component.
-XData Contents [ XMLNamespace = "http://www.intersystems.com/zen" ]
+XData Contents [ XMLNamespace = "http://www.intersystems.com/MyApp" ]
 {
 <composite>
 <html id="title" enclosingClass="title">Code Compare</html>
