@@ -6,7 +6,7 @@ Class MyApp.Application Extends %ZEN.application [ Language = objectscript ]
 Parameter APPLICATIONNAME;
 
 /// This is the URL of the main starting page of this application.
-Parameter HOMEPAGE;
+Parameter HOMEPAGE = "MyApp.Hello.cls";
 
 /// This Style block contains application-wide CSS style definitions.
 XData Style
