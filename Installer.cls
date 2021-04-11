@@ -26,6 +26,7 @@ XData setup
     <Log Text="Creating web application /restapi" Level="0"/>
     <RunInstall Class="App.Installer" Method="CreateWebAppREST"/>
   </If>
+  <User Username="_SYSTEM" PasswordVar="Password" Roles="%All" Enabled="true"/>
 </Manifest>
 }
 
@@ -118,5 +119,14 @@ ClassMethod setup(ByRef pVars, pLogLevel As %Integer = 3, pInstaller As %Install
   #; Let XGL document generate code for this method. 
   Quit ##class(%Installer.Manifest).%Generate(%compiledclass, %code, "setup")
 }
-
+ClassMethod ConfigIRIS(ByRef pVars, pLogLevel As %String = "", tInstaller) As %Status
+{
+	Set pVars("Password") = "abc123"
+	Set tSC = ..setup(.pVars)
+	If (tSC '= $$$OK) {
+		Write "Setup failed.",!
+		Write $system.Status.GetOneErrorText(tSC),!
+	}
+	Quit tSC
+}
 }
