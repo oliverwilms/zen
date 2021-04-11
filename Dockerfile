@@ -6,8 +6,9 @@ USER root
 COPY irissession.sh /
 
 WORKDIR /opt/irisapp
+COPY csp csp
 RUN mkdir /ghostdb/ && mkdir /voldata/ && mkdir /voldata/irisdb
-RUN chown ${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} /irissession.sh /opt/irisapp /ghostdb/ /voldata/ /voldata/irisdb/ \
+RUN chown ${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} /irissession.sh /opt/irisapp /opt/irisapp/csp /opt/irisapp/csp/* /ghostdb/ /voldata/ /voldata/irisdb/ \
   && chmod +x /irissession.sh
 
 USER irisowner
