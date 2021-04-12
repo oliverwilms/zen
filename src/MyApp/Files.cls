@@ -44,6 +44,24 @@ ClassMethod AnalyzeFile(pFile As %String = "") As %Status
 	Quit $$$OK
 }
 
+/// Is this a line to ignore?
+ClassMethod AnalyzeLine(pLine As %String = "") As %String
+{
+	Set tReturn = ""
+	If (pLine = "") Quit tReturn
+	If pLine?1"<Language>cache".E Quit tReturn
+	If pLine?1"<Language>objectscript".E Quit tReturn
+	If pLine?1"<TimeChanged>".E Quit tReturn
+	If pLine?1"<TimeCreated>".E Quit tReturn
+	If pLine?1"<Type>%Library.CacheSerialState".E Quit tReturn
+	If pLine?1"<Type>%Library.CacheStorage".E Quit tReturn
+	If pLine?1"<Type>%Storage.Persistent".E Quit tReturn
+	If pLine?1"<Type>%Storage.Serial".E Quit tReturn
+	If pLine?1"on "4N1"-"2N1"-"2N1" at "2N1":"2N1":"2N1"."3N1" [".E Quit tReturn
+	If pLine?1"by user "1.E1"</Description>" Quit tReturn
+	Quit pLine
+}
+
 ClassMethod CompareFiles(
 	pFile1 As %String = "",
 	pFile2 As %String = "") As %Status
@@ -53,6 +71,7 @@ ClassMethod CompareFiles(
 	If (pFile2 = "") Quit tSC
 	If (pFile1 = pFile2) Quit tSC
 	Write "Compare ",$Get(^ImportFile(pFile1))," and ",$Get(^ImportFile(pFile2)),!
+	Set diffCount = 0
 	Set tClassName = ""
 	For {
 		Set tClassName = $Order(^ImportFile(pFile1,-1,"Class",tClassName))
@@ -60,11 +79,13 @@ ClassMethod CompareFiles(
 		Set tData = $Data(^ImportFile(pFile2,-1,"Class",tClassName))
 		If (tData = 0) {
 			Write "Class ",tClassName," does not exist in ",$Get(^ImportFile(pFile2)),!
+			If $Increment(diffCount)
 			Continue
 		}
 		Set tSC = ..CompareCode(pFile1,pFile2,"Class",tClassName)
 		If $$$ISERR(tSC) {
 			Write "Diff found in ",tClassName,!
+			If $Increment(diffCount)
 		}
 	}
 	For {
@@ -73,6 +94,7 @@ ClassMethod CompareFiles(
 		Set tData = $Data(^ImportFile(pFile1,-1,"Class",tClassName))
 		If (tData = 0) {
 			Write "Class ",tClassName," does not exist in ",$Get(^ImportFile(pFile1)),!
+			If $Increment(diffCount)
 		}
 	}
 	Set tRoutine = ""
@@ -82,6 +104,7 @@ ClassMethod CompareFiles(
 		Set tData = $Data(^ImportFile(pFile2,-2,"Routine",tRoutine))
 		If (tData = 0) {
 			Write "Routine ",tRoutine," does not exist in ",$Get(^ImportFile(pFile2)),!
+			If $Increment(diffCount)
 		}
 	}
 	For {
@@ -90,8 +113,10 @@ ClassMethod CompareFiles(
 		Set tData = $Data(^ImportFile(pFile1,-2,"Routine",tRoutine))
 		If (tData = 0) {
 			Write "Routine ",tRoutine," does not exist in ",$Get(^ImportFile(pFile1)),!
+			If $Increment(diffCount)
 		}
 	}
+	Write diffCount," difference(s) found",!
 	Quit $$$OK
 }
 
@@ -102,6 +127,7 @@ ClassMethod CompareCode(
 	pWhich1 As %String = "HS.Local.VA.eSCM.Common.DocumentIDTable") As %Status
 {
 	Set tIndex = 0
+	Set tLineDiff = 0
 	Set tSC = $$$OK
 	If (pFile1 = "") Quit tSC
 	If (pFile2 = "") Quit tSC
@@ -112,36 +138,45 @@ ClassMethod CompareCode(
 	Set tLine1 = $Get(^ImportFile(pFile1,tIndex,pWhat,pWhich1))
 	If (tLine1 < 1) Quit tSC
 	If ($Get(pWhich2) = "") Set pWhich2 = pWhich1
-	Set tLine2 = $Get(^ImportFile(pFile2,tIndex,pWhat,pWhich1))
+	Set tLine2 = $Get(^ImportFile(pFile2,tIndex,pWhat,pWhich2))
 	For {
+		If tLineDiff {
+			Set diffIndex1 = tLine1
+			Set diffIndex2 = tLine2
+			Set diffLine1 = input1
+			Set diffLine2 = input2
+		}
 		For {
 			Set tLine1 = $Order(^ImportFile(pFile1,tLine1),1,input1)
 			If (tLine1 = "") Quit
+			Set input1 = ..AnalyzeLine(input1)  // Set to empty to ignore this line
 			If (input1 = "") Continue  // Skip, ignore empty lines
 			Quit
 		}
 		For {
 			Set tLine2 = $Order(^ImportFile(pFile2,tLine2),1,input2)
 			If (tLine2 = "") Quit
+			Set input2 = ..AnalyzeLine(input2)  // Set to empty to ignore this line
 			If (input2 = "") Continue  // Skip, ignore empty lines
+			Quit
+		}
+		If tLineDiff {
+			If (input1 = diffLine2) {
+				Set tSC = $$$ERROR($$$GeneralError,"ADD line at line "_diffIndex1)
+				Write diffIndex1,": ",diffLine1,!
+			} ElseIf (input2 = diffLine1) {
+				Set tSC = $$$ERROR($$$GeneralError,"ADD line at line "_diffIndex2)
+				Write diffIndex2,": ",diffLine2,!
+			} Else {
+				Set tSC = $$$ERROR($$$GeneralError,"Diff found at line "_diffIndex1)
+				Write diffIndex1,": ",diffLine1,!
+				Write diffIndex2,": ",diffLine2,!
+			}
 			Quit
 		}
 		If (input1 = "</Class>"),(input2 = "</Class>") Quit
 		If (input1 = input2) Continue
-		If input1?1"<Language>cache".E Continue
-		If input1?1"<Language>objectscript".E Continue
-		If input1?1"<TimeChanged>".E Continue
-		If input1?1"<TimeCreated>".E Continue
-		If input1?1"<Type>%Library.CacheSerialState".E Continue
-		If input1?1"<Type>%Library.CacheStorage".E Continue
-		If input1?1"<Type>%Storage.Persistent".E Continue
-		If input1?1"<Type>%Storage.Serial".E Continue
-		If input1?1"on "4N1"-"2N1"-"2N1" at "2N1":"2N1":"2N1"."3N1" [".E Continue
-		If input1?1"by user "1.E1"</Description>" Continue
-		Write tLine1,": ",input1,!
-		Write tLine2,": ",input2,!
-		Set tSC = $$$ERROR($$$GeneralError,"Diff found at line "_tLine1)
-		Quit
+		Set tLineDiff = 1
 	}
 	Quit tSC
 }
