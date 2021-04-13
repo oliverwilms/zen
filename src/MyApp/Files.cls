@@ -126,6 +126,8 @@ ClassMethod CompareCode(
 	pWhat As %String = "Class",
 	pWhich1 As %String = "HS.Local.VA.eSCM.Common.DocumentIDTable") As %Status
 {
+	Set flagStorage1 = 0
+	Set flagStorage2 = 0
 	Set tIndex = 0
 	Set tLineDiff = 0
 	Set tSC = $$$OK
@@ -149,6 +151,16 @@ ClassMethod CompareCode(
 		For {
 			Set tLine1 = $Order(^ImportFile(pFile1,tLine1),1,input1)
 			If (tLine1 = "") Quit
+			If (flagStorage1 = 0),($Extract(input1,1,8) = "<Storage") {
+				Set flagStorage1 = 1  // Skip <Storage
+				Continue
+			}
+			If (flagStorage1 = 1) {
+				If ($Extract(input1,1,9) = "</Storage") {
+					Set flagStorage1 = 0  // Skip <Storage
+				}
+				Continue
+			}
 			Set input1 = ..AnalyzeLine(input1)  // Set to empty to ignore this line
 			If (input1 = "") Continue  // Skip, ignore empty lines
 			Quit
@@ -156,6 +168,16 @@ ClassMethod CompareCode(
 		For {
 			Set tLine2 = $Order(^ImportFile(pFile2,tLine2),1,input2)
 			If (tLine2 = "") Quit
+			If (flagStorage2 = 0),($Extract(input2,1,8) = "<Storage") {
+				Set flagStorage2 = 1  // Skip <Storage
+				Continue
+			}
+			If (flagStorage2 = 1) {
+				If ($Extract(input2,1,9) = "</Storage") {
+					Set flagStorage2 = 0  // Skip <Storage
+				}
+				Continue
+			}
 			Set input2 = ..AnalyzeLine(input2)  // Set to empty to ignore this line
 			If (input2 = "") Continue  // Skip, ignore empty lines
 			Quit
