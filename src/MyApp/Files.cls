@@ -161,6 +161,11 @@ ClassMethod CompareCode(
 			Quit
 		}
 		If tLineDiff {
+			If ($Extract(diffLine1,1,6) = "<Code>"),($Extract(diffLine2,*-6,*) = input1),($Extract(diffLine2,1,*-7) = diffLine1) {
+				Set tLine2 = diffLine2
+				Set tLineDiff = 0
+				Continue
+			}
 			If (input1 = diffLine2) {
 				Set tSC = $$$ERROR($$$GeneralError,"ADD line at line "_diffIndex1)
 				Write diffIndex1,": ",diffLine1,!
