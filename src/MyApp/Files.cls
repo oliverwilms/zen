@@ -121,10 +121,10 @@ ClassMethod CompareFiles(
 }
 
 ClassMethod CompareCode(
-	pFile1 As %String = "1",
-	pFile2 As %String = "2",
+	pFile1 As %String = "4",
+	pFile2 As %String = "5",
 	pWhat As %String = "Class",
-	pWhich1 As %String = "HS.Local.VA.eSCM.Common.DocumentIDTable") As %Status
+	pWhich1 As %String = "HS.Local.VA.eSCM.DMLSS.Complex.CCS.CCRCC1Sequence") As %Status
 {
 	Set flagStorage1 = 0
 	Set flagStorage2 = 0
@@ -184,7 +184,7 @@ ClassMethod CompareCode(
 		}
 		If tLineDiff {
 			If ($Extract(diffLine1,1,6) = "<Code>"),($Extract(diffLine2,*-6,*) = input1),($Extract(diffLine2,1,*-7) = diffLine1) {
-				Set tLine2 = diffLine2
+				Set tLine2 = diffIndex2
 				Set tLineDiff = 0
 				Continue
 			}
