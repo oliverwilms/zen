@@ -71,6 +71,10 @@ ClassMethod CompareFiles(
 	If (pFile2 = "") Quit tSC
 	If (pFile1 = pFile2) Quit tSC
 	Write "Compare ",$Get(^ImportFile(pFile1))," and ",$Get(^ImportFile(pFile2)),!
+	Set tCompare = $Increment(^CompareFiles)
+	Set ^CompareFiles(tCompare) = $Horolog
+	Set ^CompareFiles(tCompare,"File1") = pFile1
+	Set ^CompareFiles(tCompare,"File2") = pFile2
 	Set diffCount = 0
 	Set tClassName = ""
 	For {
@@ -79,10 +83,12 @@ ClassMethod CompareFiles(
 		Set tData = $Data(^ImportFile(pFile2,-1,"Class",tClassName))
 		If (tData = 0) {
 			Write "Class ",tClassName," does not exist in ",$Get(^ImportFile(pFile2)),!
+			Set ^CompareFiles(tCompare,-1,"Class",tClassName) = "-2^Class "_tClassName_" does not exist in "_$Get(^ImportFile(pFile2))
 			If $Increment(diffCount)
 			Continue
 		}
 		Set tSC = ..CompareCode(pFile1,pFile2,"Class",tClassName)
+		Set ^CompareFiles(tCompare,-1,"Class",tClassName) = tSC
 		If $$$ISERR(tSC) {
 			Write "Diff found in ",tClassName,!
 			If $Increment(diffCount)
@@ -94,6 +100,7 @@ ClassMethod CompareFiles(
 		Set tData = $Data(^ImportFile(pFile1,-1,"Class",tClassName))
 		If (tData = 0) {
 			Write "Class ",tClassName," does not exist in ",$Get(^ImportFile(pFile1)),!
+			Set ^CompareFiles(tCompare,-1,"Class",tClassName) = "-1^Class "_tClassName_" does not exist in "_$Get(^ImportFile(pFile1))
 			If $Increment(diffCount)
 		}
 	}
@@ -104,6 +111,7 @@ ClassMethod CompareFiles(
 		Set tData = $Data(^ImportFile(pFile2,-2,"Routine",tRoutine))
 		If (tData = 0) {
 			Write "Routine ",tRoutine," does not exist in ",$Get(^ImportFile(pFile2)),!
+			Set ^CompareFiles(tCompare,-2,"Routine",tRoutine) = "-2^Routine "_tRoutine_" does not exist in "_$Get(^ImportFile(pFile2))
 			If $Increment(diffCount)
 		}
 	}
@@ -113,10 +121,12 @@ ClassMethod CompareFiles(
 		Set tData = $Data(^ImportFile(pFile1,-2,"Routine",tRoutine))
 		If (tData = 0) {
 			Write "Routine ",tRoutine," does not exist in ",$Get(^ImportFile(pFile1)),!
+			Set ^CompareFiles(tCompare,-2,"Routine",tRoutine) = "-1^Routine "_tRoutine_" does not exist in "_$Get(^ImportFile(pFile1))
 			If $Increment(diffCount)
 		}
 	}
 	Write diffCount," difference(s) found",!
+	Set ^CompareFiles(tCompare) = $Get(^CompareFiles(tCompare))_"^"_$Horolog_"^"_diffCount
 	Quit $$$OK
 }
 
