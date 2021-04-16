@@ -14,6 +14,7 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Route Url="/debug" Method="POST" Call="PostDebug" />
 <Route Url="/debug/:debug" Method="POST" Call="PostDebug" />
 <Route Url="/debug/:debug/:index" Method="POST" Call="PostDebug" />
+<Route Url="/click/:what/:which" Method="POST" Call="DebugClick" />
 <Route Url="/sql/:query" Method="POST" Call="PostSQL" />
 </Routes>
 }
@@ -36,9 +37,26 @@ ClassMethod DebugStatus(pStatus As %Status) As %Status
 	Quit ..DebugTEST(tStatus)
 }
 
+ClassMethod DebugClick(
+	pDebug As %String = "",
+	pIndex As %String = -1) As %Status
+{
+	Set tSC = $$$OK
+	Try {
+		Do ..DebugTEST("MyApp.REST - DebugClick")
+		Do ..DebugTEST("pDebug = "_pDebug)
+		Do ..DebugTEST("pIndex = "_pIndex)
+		Set tIncrement = $Increment(^restAllDEBUG)
+		Set ^restAllDEBUG(tIncrement) = pDebug_","_ pIndex
+	} Catch {
+		Set tSC = $$$ERROR($$$GeneralError,"Error")
+	}
+	Quit tSC
+}
+
 ClassMethod GetDebug() As %Status
 {
-	Do ..DebugTEST("Riches.REST - GetDebug")
+	Do ..DebugTEST("MyApp.REST - GetDebug")
 	Set tBaseLogId = 0
 	Set tBaseLogId = 1 + tBaseLogId
 	Do ..DebugTEST("tBaseLogId = "_tBaseLogId)
@@ -52,7 +70,7 @@ ClassMethod PostDebug(
 	pDebug As %String = "",
 	pIndex As %String = -1) As %Status
 {
-	Do ..DebugTEST("Riches.REST - PostDebug")
+	Do ..DebugTEST("MyApp.REST - PostDebug")
 	Do ..DebugTEST("pDebug = "_pDebug)
 	Do ..DebugTEST("pIndex = "_pIndex)
 	Set tIncrement = $Increment(^RichesDEBUG)
@@ -73,7 +91,7 @@ ClassMethod PostSQL(
 	pQuery As %String = "",
 	pIndex As %String = -1) As %Status
 {
-	Do ..DebugTEST("Riches.REST - PostSQL")
+	Do ..DebugTEST("MyApp.REST - PostSQL")
 	Do ..DebugTEST("pQuery = "_pQuery)
 	Do ..DebugTEST("pIndex = "_pIndex)
 	Set tSC = ..TestQuery(pQuery,.pQuery)
@@ -127,7 +145,7 @@ ClassMethod TestQuery(
 	pQuery As %String = "",
 	Output pQuery2 As %String) As %Status
 {
-	Do ..DebugTEST("Riches.REST - TestQuery")
+	Do ..DebugTEST("MyApp.REST - TestQuery")
 	Do ..DebugTEST("pQuery = "_pQuery)
 	Set tCOMMAND = $ZCONVERT($Piece(pQuery," ",1),"U")
 	Do ..DebugTEST("tCOMMAND = "_tCOMMAND)
