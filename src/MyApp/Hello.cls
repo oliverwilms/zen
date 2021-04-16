@@ -57,6 +57,12 @@ XData Contents [ XMLNamespace = "http://www.intersystems.com/zen" ]
 {
 <page xmlns="http://www.intersystems.com/zen" title="Code Compare" xmlns:MyApp="http://www.intersystems.com/MyApp">
 <MyApp:MenuComposite width="100%"/>
+<locatorBar id="locator" OnGetQuickLinks="GetQuickLinks">
+  <locatorLink caption="Home" title="Home page"
+               href="ZENDemo.Home.cls"/>
+  <locatorLink caption="Active Group Demo"
+               title="Active Group Demo" />
+</locatorBar>
 <hgroup width="100%">
 <fieldSet id="fieldSet1" hidden="false" legend="File1">
 <form id="form1" controllerId="file1" layout="horizontal" cellStyle="padding: 2px; padding-left: 5px; padding-right: 5px;">
@@ -72,7 +78,7 @@ XData Contents [ XMLNamespace = "http://www.intersystems.com/zen" ]
 </fieldSet>
 </hgroup>
 
-<vgroup width="50%">
+<vgroup width="100%">
 <html id="title">Table of files:</html>
 <dataController id="file1" modelClass="MyApp.FileModel" modelId=""/>
 <dataController id="file2" modelClass="MyApp.FileModel" modelId=""/>
@@ -83,9 +89,51 @@ XData Contents [ XMLNamespace = "http://www.intersystems.com/zen" ]
 <column colName="FileId" hidden="true"/>
 <column header="Choose" link="javascript:zenPage.showForm(1,'#(%query.FileId)#');" linkCaption="File1" width="5%" />
 <column header="Choose" link="javascript:zenPage.showForm(2,'#(%query.FileId)#');" linkCaption="File2" width="5%" />
+<column header="Forget" link="javascript:zenPage.forgetFile(2,'#(%query.FileId)#');" linkCaption="Forget" width="5%" />
 </tablePane>
+<iframe id="frame1" src="" width="100%" />
+<text id="idHidden" label="Hidden ID: " size="50" />
+<iframe id="frame2" src="" width="100%" />
 </vgroup>
 </page>
+}
+
+ClassMethod GetQuickLinks(Output pLinks) As %Status
+{
+  Set pLinks("Home") = "ZENDemo.Home.cls"
+  Set pLinks("Expense Calculator") = "ZENDemo.ExpenseCalculator.cls"
+  Set pLinks("MVC Master Detail") = "ZENMVC.MVCMasterDetail.cls"
+  Set pLinks("MVC Chart") = "ZENMVC.MVCChart.cls"
+  Set pLinks("MVC Meters") = "ZENMVC.MVCMeters.cls"
+  Set pLinks("MVC Form") = "ZENMVC.MVCForm.cls"
+  Set pLinks("Test Suite") = "ZENTest.HomePage.cls"
+  Set pLinks("Controls") = "ZENDemo.ControlTest.cls"
+  Set pLinks("Methods") = "ZENDemo.MethodTest.cls"
+  Quit $$$OK
+}
+
+/// Create a new instance of the controller object
+ClientMethod compare(
+	form,
+	file) [ Language = javascript ]
+{
+	zen('frame1').setProperty('src','CompareFiles.csp');
+}
+
+/// Create a new instance of the controller object
+ClientMethod details(
+	form,
+	file) [ Language = javascript ]
+{
+	zen('frame2').setProperty('src','CompareFiles.csp');
+}
+
+/// Create a new instance of the controller object
+ClientMethod forgetFile(
+	form,
+	file) [ Language = javascript ]
+{
+	zen('frame1').setProperty('src','CompareFiles.csp');
 }
 
 /// Create a new instance of the controller object
