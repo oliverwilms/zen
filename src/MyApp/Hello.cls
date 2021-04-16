@@ -125,7 +125,7 @@ ClientMethod details(
 	form,
 	file) [ Language = javascript ]
 {
-	zen('frame2').setProperty('src','CompareFiles.csp');
+	zen('frame2').setProperty('src','Details.csp');
 }
 
 /// Create a new instance of the controller object
@@ -133,7 +133,7 @@ ClientMethod forgetFile(
 	form,
 	file) [ Language = javascript ]
 {
-	zen('frame1').setProperty('src','CompareFiles.csp');
+	alert('not implemented');
 }
 
 /// Create a new instance of the controller object
