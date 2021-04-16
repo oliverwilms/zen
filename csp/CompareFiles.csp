@@ -1,0 +1,72 @@
+<html>
+<head>
+
+<!-- Put your page Title here -->
+<title>	Cache Server Page </title>
+<script language="javascript">
+window.onmessage = function(event){
+    alert(event.data);
+};
+function postDebug(item, index) {
+	var escape = item.replace(/\//g, '-');  // fix slashes in dates
+	//var escape = encodeURI(escape);
+	var escape = encodeURIComponent(escape);  // fix % and more
+	if (item == '') escape = 'NULL';
+	//document.getElementById("div_debug").innerHTML += index + "," + escape + "<br>";
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			//document.getElementById("div_debug").innerHTML += this.responseText;
+		}
+		if (this.readyState == 4 && this.status != 200) {
+			//document.getElementById("div_debug").innerHTML += this.responseText;
+		}
+	};
+	//xhttp.open("GET", "/restapi/debug", true, "_SYSTEM", "SYS");
+	//xhttp.open("POST", "/restapi/debug/" + escape + '/' + index, true);
+	xhttp.open("POST", "/restAll/click/" + escape + '/' + index, true, "_SYSTEM", "abc123");
+	xhttp.send();
+}
+
+</script>
+</head>
+
+<body>
+<table>
+<tr><th>Routines</th></tr>
+<script language="Cache" runat="Server">
+Set tCompare=1
+Set tCount=0
+Set tName=""
+Set tName=$Order(^CompareFiles(tCompare,-2,"Routine",tName),1,tData)
+</script>
+<csp:while condition="($Length(tName)>0)">
+<tr>
+<td onclick="javascript:postDebug('routine','#(tName)#');">
+<script language="Cache" runat="Server">
+Write tName,!
+Set tName=$Order(^CompareFiles(tCompare,-2,"Routine",tName),1,tData)
+</script>
+</td>
+</tr>
+</csp:while>
+<tr><th>Classes</th></tr>
+<script language="Cache" runat="Server">
+Set tCompare=1
+Set tCount=0
+Set tName=""
+Set tName=$Order(^CompareFiles(tCompare,-1,"Class",tName),1,tData)
+</script>
+<csp:while condition="($Length(tName)>0)">
+<tr>
+<td onclick="javascript:postDebug('class','#(tName)#');">
+<script language="Cache" runat="Server">
+Write tName,!
+Set tName=$Order(^CompareFiles(tCompare,-1,"Class",tName),1,tData)
+</script>
+</td>
+</tr>
+</csp:while>
+</table>
+</body>
+</html>
