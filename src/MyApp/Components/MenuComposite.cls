@@ -35,9 +35,9 @@ XData Contents [ XMLNamespace = "http://www.intersystems.com/MyApp" ]
 <composite>
 <html id="title" enclosingClass="title">Code Compare</html>
 <hmenu width="100%">
-<menuItem id="m1" caption="Home" link="MyApp.Hello.cls" help="Go to display page" />
-<menuItem id="m2" caption="Analyze" link="" help="To Be Added" />
-<menuItem id="m3" caption="Compare" link="" help="To Be Added" />
+<menuItem id="m1" caption="Home" link="MyApp.Hello.cls" help="Go to Home page" />
+<menuItem id="m2" caption="Compare" link="javascript:zenPage.compare();" help="Go to Compare page" />
+<menuItem id="m3" caption="Details" link="javascript:zenPage.details();" help="Go to Details page" />
 </hmenu>
 </composite>
 }
