@@ -5,14 +5,16 @@ This is my entry for InterSystems Developer Tools Contest 2021.
 I often export a project from different systems. I end up with tons of differences caused by timestamps, storage definitions, or other things I like to ignore. This is very much a work in progress. Please be patient with me as I make it work.
 
 ## Getting Started
-Point your browser at http://localhost:52673/irisapp/MyApp.Home.cls. If you are prompted to login, login as _SYSTEM. Please note the default password for this app is abc123.
+Point your browser at http://localhost:52673/irisapp/MyApp.Hello.cls. If you are prompted to login, login as _SYSTEM. Please note the default password for this app is abc123.
 ![screenshot](https://github.com/oliverwilms/bilder/blob/main/Hello.PNG)
 
 There are two Browse buttons to select two files from the server. The files are automatically imported into a global with index by routines and classes. I initially coded a classmethod to compare two files and show the first difference I find in each class.
 
 The Compare menu option displays a list of routines and classes in a frame. My idea is to display the changed classes in a different style. This is not yet done.
 
-If I click to select a class or routine, I store its name. When I click on Details menu option, I show two versions of the last selected class or routine in a frame.
+If I click to select a class or routine, I store its name. 
+When I click on Details menu option, I show file1 left and file2 right.
+Shorter files are padded with empty lines. This works for also for flat text file as .CPF or .txt or similar.  
 
 ## Installation with Docker
 
