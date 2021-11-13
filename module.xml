@@ -3,7 +3,7 @@
   <Document name="code-compare.ZPM">
     <Module>
       <Name>code-compare</Name>
-      <Version>0.0.1</Version>
+      <Version>0.0.2</Version>
       <Description>IRIS application for comparing code</Description>
       <Packaging>module</Packaging>
       <SourcesRoot>src</SourcesRoot>
