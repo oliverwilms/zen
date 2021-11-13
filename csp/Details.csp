@@ -3,11 +3,13 @@
 
 <!-- Put your page Title here -->
 <title>	Details </title>
+
 <script language="javascript">
 window.onmessage = function(event){
-    alert(event.data);
 };
-function postDebug(item, index) {
+</script>
+ <!--
+ function postDebug(item, index) {
 	var escape = item.replace(/\//g, '-');  // fix slashes in dates
 	//var escape = encodeURI(escape);
 	var escape = encodeURIComponent(escape);  // fix % and more
@@ -22,55 +24,79 @@ function postDebug(item, index) {
 			//document.getElementById("div_debug").innerHTML += this.responseText;
 		}
 	};
-	//xhttp.open("GET", "/restapi/debug", true, "_SYSTEM", "SYS");
-	//xhttp.open("POST", "/restapi/debug/" + escape + '/' + index, true);
-	xhttp.open("POST", "/restAll/click/" + escape + '/' + index, true, "_SYSTEM", "abc123");
-	xhttp.send();
+	//xhttp.open("GET", "/restAll/debug", true, "_SYSTEM", "SYS");
+	//xhttp.open("POST", "/restAll/click/" + escape + '/' + index, true, "_SYSTEM", "abc123");
+	xhttp.open("POST", "/restAll/click/" + escape + '/' + index, true, "_SYSTEM", "SYS");
+	;xhttp.send();
 }
 
-</script>
+</script -->
 </head>
-
+<script language="Cache" method="init" arguments="file,.tName" returntype="%Integer">
+ if 'file {
+ 	set tName="*** no file ***",index="" 
+ } elseif $D(^ImportFile(file,-1)) {
+	 set tName=$O(^ImportFile(file,-1,"Class",""),1,index)
+ } ElseIf $D(^ImportFile(file,-2)) {
+	 set tName=$P($O(^ImportFile(file,-2,"Routine",""),1,index),"""")
+ } Else {
+	 set tName=$g(^ImportFile(file)),index=0
+ }
+ quit index
+</script>
+<script language="Cache" method="skip" arguments=".line" returntype="">
+ quit:'index   ; no class or rtn
+If line?1"</Class".E Set line="."
+#; If line?1"<Class name=".E Set line="."
+If line?1"<Routine".E Set line="."
+If line?1"</Routine".E Set line="."
+If line?1"</Export".E Set line="."
+</script>
 <body>
 <table>
 <script language="Cache" runat="Server">
-Set tCompare=1
-Set tFile1=1
-Set tFile2=2
+
+Set tFile1=%request.Get("file1",0)
+Set tFile2=%request.Get("file2",0)
 Set tDEBUG=$Get(^restAllDEBUG,0)
 Set tData=$Get(^restAllDEBUG(tDEBUG))
-Set tWhat=$Piece(tData,",",1)
-If (tWhat = "class") { Set tSub2 = -1, tSub3 = "Class" }
-If (tWhat = "routine") { Set tSub2 = -2, tSub3 = "Routine" }
+Set tWhat=%request.Get("what",$Piece(tData,",",1))
+set tIndex1=..init(tFile1,.tName1)
+set tIndex2=..init(tFile2,.tName2)
+ /*
+#;If (tWhat = "class") { Set tSub2 = -1, tSub3 = "Class" }
+#;ElseIf (tWhat = "routine") { Set tSub2 = -2, tSub3 = "Routine" } 
+#;Else  { Set (tSub2,tSub3,tIndex1,tIndex2)="null"}
 Set tName=$Piece(tData,",",2)
-If (tName = "") Set tName = "null"
-Set tIndex1=$Get(^ImportFile(tFile1,$Get(tSub2,"null"),$Get(tSub3,"null"),tName))
-Set tIndex2=$Get(^ImportFile(tFile2,$Get(tSub2,"null"),$Get(tSub3,"null"),tName))
+If (tName = "") {
+	Set tName1 = $ORDER(^ImportFile(tFile1,tSub2,tSub3,""),1,tIndex1)
+	Set tName2 = $ORDER(^ImportFile(tFile2,tSub2,tSub3,""),1,tIndex2)
+} else  {	
+	Set tIndex1=$Get(^ImportFile(tFile1,tSub2,tSub3,tName))
+	Set tIndex2=$Get(^ImportFile(tFile2,tSub2,tSub3,tName))
+	set (tName1,tName2)=tName
+}
+*/
+
 </script>
-<tr><th colspan="3">#(tName)#</th></tr>
-<tr><th>Line</th><th>#(tName)#</th><th>Line</th><th>#(tName)#</th></tr>
-<csp:while condition="($Length(tIndex1)>0)">
+<!-- tr><th colspan="3">#(tName)#</th></tr -->
+<tr><th>Line</th><th>#(tName1)#</th><th>Line</th><th>#(tName2)#</th></tr>
+<csp:while condition="($Length(tIndex1_tIndex2)>0)">
 <tr>
 <td>#(tIndex1)#</td>
 <script language="Cache" runat="Server">
-Set tLine1=$Get(^ImportFile(tFile1,tIndex1))
-//Write ##class(%CSP.Page).EscapeHTML(tLine1),!
-Set tIndex1=$Order(^ImportFile(tFile1,tIndex1),1,tLine1)
-If tLine1?1"</Class>".E { Set tIndex1="" }
-If tLine1?1"<Class name=".E { Set tIndex1="" }
-If tLine1?1"<Routine name=".E { Set tIndex1="" }
+set (tLine1,tLine2)=""
+Set:tIndex1]"" tIndex1=$Order(^ImportFile(tFile1,tIndex1),1,tLine1)
+do ..skip(.tLine1)
+
 </script>
 <td>#(##class(%CSP.Page).EscapeHTML(tLine1))#</td>
 <td>#(tIndex2)#</td>
 <script language="Cache" runat="Server">
-Set tLine2=$Get(^ImportFile(tFile2,tIndex2))
-//Write ##class(%CSP.Page).EscapeHTML(tLine1),!
-Set tIndex2=$Order(^ImportFile(tFile2,tIndex2),1,tLine2)
-If tLine2?1"</Class>".E { Set tIndex2="" }
-If tLine2?1"<Class name=".E { Set tIndex2="" }
-If tLine2?1"<Routine name=".E { Set tIndex2="" }
+Set:tIndex2]"" tIndex2=$Order(^ImportFile(tFile2,tIndex2),1,tLine2)
+do ..skip(.tLine2)
 </script>
-<td>#(##class(%CSP.Page).EscapeHTML(tLine1))#</td>
+<td>#(##class(%CSP.Page).EscapeHTML(tLine2))#</td>
 </tr>
 </csp:while>
 </table>
