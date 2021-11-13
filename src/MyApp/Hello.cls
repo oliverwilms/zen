@@ -58,22 +58,22 @@ XData Contents [ XMLNamespace = "http://www.intersystems.com/zen" ]
 <page xmlns="http://www.intersystems.com/zen" title="Code Compare" xmlns:MyApp="http://www.intersystems.com/MyApp">
 <MyApp:MenuComposite width="100%"/>
 <locatorBar id="locator" OnGetQuickLinks="GetQuickLinks">
-  <locatorLink caption="Home" title="Home page"
+  <!-- locatorLink caption="Home" title="Home page"
                href="ZENDemo.Home.cls"/>
   <locatorLink caption="Active Group Demo"
-               title="Active Group Demo" />
+               title="Active Group Demo" / -->
 </locatorBar>
 <hgroup width="100%">
 <fieldSet id="fieldSet1" hidden="false" legend="File1">
 <form id="form1" controllerId="file1" layout="horizontal" cellStyle="padding: 2px; padding-left: 5px; padding-right: 5px;">
 <text label="File:" dataBinding="FilePN" id="FilePN1" name="FilePN1" size="60"/>
-<button caption="Browse first file" onclick="zenPage.showPopupFile(1);" title="A demonstration of launching a popup window" />
+<button caption="Browse first file" onclick="zenPage.showPopupFile(1);" /><!-- title="A demonstration of launching a popup window" /-->
 </form>
 </fieldSet>
 <fieldSet id="fieldSet2" hidden="false" legend="File2">
 <form id="form2" controllerId="file2" layout="horizontal" cellStyle="padding: 2px; padding-left: 5px; padding-right: 5px;">
 <text label="File:" dataBinding="FilePN" id="FilePN2" name="FilePN2" size="60"/>
-<button caption="Browse second file" onclick="zenPage.showPopupFile(2);" title="A demonstration of launching a popup window" />
+<button caption="Browse second file" onclick="zenPage.showPopupFile(2);" /> <!--title="A demonstration of launching a popup window" /-->
 </form>
 </fieldSet>
 </hgroup>
@@ -91,24 +91,24 @@ XData Contents [ XMLNamespace = "http://www.intersystems.com/zen" ]
 <column header="Choose" link="javascript:zenPage.showForm(2,'#(%query.FileId)#');" linkCaption="File2" width="5%" />
 <column header="Forget" link="javascript:zenPage.forgetFile(2,'#(%query.FileId)#');" linkCaption="Forget" width="5%" />
 </tablePane>
-<iframe id="frame1" src="" width="100%" />
-<text id="idHidden" label="Hidden ID: " size="50" />
-<iframe id="frame2" src="" width="100%" />
+<iframe id="frame1" src="" width="100%" height="80" />
+<!--text id="idHidden" label="Hidden ID: " size="50" / -->
+<iframe id="frame2" src="" width="100%" height="600" />
 </vgroup>
 </page>
 }
 
 ClassMethod GetQuickLinks(Output pLinks) As %Status
 {
-  Set pLinks("Home") = "ZENDemo.Home.cls"
-  Set pLinks("Expense Calculator") = "ZENDemo.ExpenseCalculator.cls"
-  Set pLinks("MVC Master Detail") = "ZENMVC.MVCMasterDetail.cls"
-  Set pLinks("MVC Chart") = "ZENMVC.MVCChart.cls"
-  Set pLinks("MVC Meters") = "ZENMVC.MVCMeters.cls"
-  Set pLinks("MVC Form") = "ZENMVC.MVCForm.cls"
-  Set pLinks("Test Suite") = "ZENTest.HomePage.cls"
-  Set pLinks("Controls") = "ZENDemo.ControlTest.cls"
-  Set pLinks("Methods") = "ZENDemo.MethodTest.cls"
+#;  Set pLinks("Home") = "ZENDemo.Home.cls"
+#;  Set pLinks("Expense Calculator") = "ZENDemo.ExpenseCalculator.cls"
+#;  Set pLinks("MVC Master Detail") = "ZENMVC.MVCMasterDetail.cls"
+#;  Set pLinks("MVC Chart") = "ZENMVC.MVCChart.cls"
+#;  Set pLinks("MVC Meters") = "ZENMVC.MVCMeters.cls"
+#;  Set pLinks("MVC Form") = "ZENMVC.MVCForm.cls"
+#;  Set pLinks("Test Suite") = "ZENTest.HomePage.cls"
+#;  Set pLinks("Controls") = "ZENDemo.ControlTest.cls"
+#;  Set pLinks("Methods") = "ZENDemo.MethodTest.cls"
   Quit $$$OK
 }
 
@@ -117,6 +117,7 @@ ClientMethod compare(
 	form,
 	file) [ Language = javascript ]
 {
+	alert('compare '+form+'* '+file);
 	zen('frame1').setProperty('src','CompareFiles.csp');
 }
 
@@ -125,7 +126,8 @@ ClientMethod details(
 	form,
 	file) [ Language = javascript ]
 {
-	zen('frame2').setProperty('src','Details.csp');
+	url='Details.csp?file1='+zen('file1').modelId+'&file2='+zen('file2').modelId
+	zen('frame2').setProperty('src',url);
 }
 
 /// Create a new instance of the controller object
@@ -133,7 +135,15 @@ ClientMethod forgetFile(
 	form,
 	file) [ Language = javascript ]
 {
-	alert('not implemented');
+	var controller = zenPage.getComponentById('file' + form);
+	controller.deleteId(file) ; 
+	var table = zenPage.getComponentById('files');
+	table.executeQuery();
+	zen('file1').modelId='';
+	zen('file2').modelId='';
+	zen('FilePN1').value='';
+	zen('FilePN2').setValue='';
+	zen('frame2').setProperty('src','Details.csp');
 }
 
 /// Create a new instance of the controller object
@@ -148,23 +158,23 @@ ClientMethod onPopupAction(
 	action,
 	value) [ Language = javascript ]
 {
-	//alert(popupName);
+  //alert(popupName);
   //var escape = item.replace(/\//g, '-');  // fix slashes in dates
-  var escape1 = encodeURI(value);
+  //var escape1 = encodeURI(value);
   //alert(escape1);
-  var escape2 = encodeURIComponent(value);  // fix % and more
+  //var escape2 = encodeURIComponent(value);  // fix % and more
   //alert(escape2);
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      //document.getElementById("div_debug").innerHTML += this.responseText;
-    }
-    if (this.readyState == 4 && this.status != 200) {
-      //document.getElementById("div_debug").innerHTML += this.responseText;
-    }
+//    if (this.readyState == 4 && this.status == 200) {
+//      //document.getElementById("div_debug").innerHTML += this.responseText;
+//    }
+//    if (this.readyState == 4 && this.status != 200) {
+//      //document.getElementById("div_debug").innerHTML += this.responseText;
+//    }
   };
   xhttp.open("POST", "/restAll/debug", true);
-  //xhttp.open("POST", "/restapi/debug/" + escape + '/' + index, true, "_SYSTEM", "SYS");
+  //xhttp.open("POST", "/restAll/debug/" + escape + '/' + index, true, "_SYSTEM", "SYS");
   xhttp.send(value);
   if (popupName == 'FileSelectWindow1') {
   }

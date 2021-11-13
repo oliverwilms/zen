@@ -8,11 +8,14 @@ services:
     init: true
     restart: always
     ports: 
-      - 52672:51773
+#      - 52672:51773
+      - 52672:1972
       - 52673:52773
       - 53773
     volumes:
-      - ~/iris.key:/usr/irissys/mgr/iris.key
+# anble free exchange with repo dir
+      - ./:/exchange
+#      - ~/iris.key:/usr/irissys/mgr/iris.key
       - zen/voldata
 
 volumes:

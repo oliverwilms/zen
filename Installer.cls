@@ -22,8 +22,8 @@ XData setup
     <Log Text="Creating web application /riches" Level="0"/>
     <RunInstall Class="App.Installer" Method="CreateWebAppModel"/>
   </If>
-  <If Condition='(##class(Security.Applications).Exists("/restapi")=0)'>
-    <Log Text="Creating web application /restapi" Level="0"/>
+  <If Condition='(##class(Security.Applications).Exists("/restAll")=0)'>
+    <Log Text="Creating web application /restAll" Level="0"/>
     <RunInstall Class="App.Installer" Method="CreateWebAppREST"/>
   </If>
   <User Username="_SYSTEM" PasswordVar="Password" Roles="%All" Enabled="true"/>
@@ -98,13 +98,14 @@ ClassMethod CreateWebAppREST(pVars, pLogLevel, tInstaller) As %Status
   } Else {
     Set cspProperties("AutheEnabled") = $$$AutheCache // Password
   }
-  Set cspName = "/restapi"
+  Set cspName = "/restAll"
   Set cspProperties("NameSpace") = $Get(Namespace,"IRISAPP")
   Set cspProperties("Enabled") = 1
   Set cspProperties("AutheEnabled") = $$$AutheUnauthenticated + $$$AutheCache
   Set cspProperties("DeepSeeEnabled") = 1
   Set cspProperties("iKnowEnabled") = 0
-  Set cspProperties("DispatchClass") = "Riches.REST"
+ #; Set cspProperties("DispatchClass") = "Riches.REST"
+  Set cspProperties("DispatchClass") = "MyApp.REST"
   set cspProperties("MatchRoles") = ":%DB_IRISAPP"  // To allow unauthenticated access, you must give the web application the %DB_IRISAPP role
   Set cspProperties("Resource") = ""
   Set cspProperties("ServeFiles") = 1
