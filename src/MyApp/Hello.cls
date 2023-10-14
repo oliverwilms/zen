@@ -117,7 +117,7 @@ ClientMethod compare(
 	form,
 	file) [ Language = javascript ]
 {
-	alert('compare '+form+'* '+file);
+	// alert('compare '+form+'* '+file);   // is called without params =>> undefined
 	zen('frame1').setProperty('src','CompareFiles.csp');
 }
 
