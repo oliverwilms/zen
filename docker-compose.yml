@@ -4,19 +4,17 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
-    command: "-b /opt/irisapp/vcopy.sh"
+    command: "-b /opt/irisapp/vcopy.sh --ISCAgent false"
     init: true
     restart: always
     ports: 
-#      - 52672:51773
       - 52672:1972
       - 52673:52773
       - 53773
     volumes:
 # anble free exchange with repo dir
       - ./:/exchange
-#      - ~/iris.key:/usr/irissys/mgr/iris.key
-      - zen/voldata
+      - zen:/voldata
 
 volumes:
   zen:
